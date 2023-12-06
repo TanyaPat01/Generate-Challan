@@ -1,18 +1,4 @@
-pipeline {
-    agent any
-
-    environment {
-        DOCKER_IMAGE_NAME = 'your-docker-image-name'
-    }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
-        stage('Install Dependencies') {
+    stage('Install Dependencies') {
             steps {
                 script {
                     sh 'pip install -r requirements.txt'
@@ -62,20 +48,3 @@ pipeline {
             }
         }
     }
-
-    post {
-        success {
-            echo 'Build and tests passed!'
-
-            // Additional steps for email notification on success
-        }
-
-        failure {
-            // Send email on failure
-            emailext subject: 'Pipeline Failed: ${currentBuild.fullDisplayName}',
-                      body: 'The pipeline has failed. Please check the Jenkins console output for details.',
-                      to: 'adya.tiwari20@st.niituniversity.in, somia.kumari20@st.niituniversity.in, tanya.patel20@st.niituniversity.in',
-                      recipientProviders: [[$class: 'CulpritsRecipientProvider']]
-        }
-    }
-}
