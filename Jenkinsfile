@@ -2,9 +2,7 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_VERSION = '3.9.1'
-        IMAGE_NAME = 'your-docker-registry/your-python-app'
-        DOCKERFILE_PATH = 'Dockerfile' 
+        DOCKER_IMAGE_NAME = 'your-docker-image-name'
     }
 
     stages {
@@ -14,32 +12,23 @@ pipeline {
             }
         }
 
-        stage('Prepare Environment') {
+        stage('Install Dependencies') {
             steps {
                 script {
-                    sh "python${3.9.1} -m venv venv"
-                    sh "source venv/bin/activate"
+                    sh 'pip install -r requirements.txt'
                 }
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                sh "pip install -r requirements.txt"
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                sh "python -m pytest"
-            }
-        }
-
-        stage('Build') {
+        stage('Run Unit Tests') {
             steps {
                 script {
-                    // Include any additional build steps here
-                    sh "python setup.py sdist bdist_wheel"
+                    try {
+                        sh 'python -m pytest tests/'
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        throw e
+                    }
                 }
             }
         }
@@ -47,30 +36,46 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build Docker image
-                    sh "docker build -t ${IMAGE_NAME} -f ${DOCKERFILE_PATH} ."
+                    sh 'docker build -t $DOCKER_IMAGE_NAME .'
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Run Application in Docker') {
             steps {
-                // Add deployment steps here, if applicable
+                script {
+                    sh 'docker run -p 8080:8080 $DOCKER_IMAGE_NAME'
+                }
+            }
+        }
+
+        stage('Selenium Test Automation') {
+            steps {
+                script {
+                    // Set up virtual display for headless testing (for Linux)
+                    sh 'export DISPLAY=:99'
+                    sh 'Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &'
+
+                    // Run Selenium tests
+                    sh 'python -m pytest --headless tests/'
+                }
             }
         }
     }
 
     post {
         success {
-            echo 'Build and deployment successful!'
+            echo 'Build and tests passed!'
+
+            // Additional steps for email notification on success
         }
 
         failure {
-            echo 'Build or deployment failed. Take necessary actions.'
-        }
-
-        always {
-            echo 'Pipeline completed.'
+            // Send email on failure
+            emailext subject: 'Pipeline Failed: ${currentBuild.fullDisplayName}',
+                      body: 'The pipeline has failed. Please check the Jenkins console output for details.',
+                      to: 'adya.tiwari20@st.niituniversity.in, somia.kumari20@st.niituniversity.in, tanya.patel20@st.niituniversity.in',
+                      recipientProviders: [[$class: 'CulpritsRecipientProvider']]
         }
     }
 }
