@@ -1,4 +1,31 @@
-    stage('Install Dependencies') {
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE_NAME = 'jenkins/jenkins'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'capstone', url: 'https://github.com/TanyaPat01/Generate-Challan']])
+            }
+        }
+        
+        stage('build') {
+            steps {
+                git branch:'main', url:'https://github.com/TanyaPat01/Generate-Challan'
+                sh 'python3 ops.py'
+            }
+        }
+        
+        stage('test') {
+            steps {
+                sh 'python3 -m pytest'
+            }
+        }
+        
+        stage('Install Dependencies') {
             steps {
                 script {
                     sh 'pip install -r requirements.txt'
@@ -13,7 +40,7 @@
                         sh 'python -m pytest tests/'
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
-                        throw e
+                        throw error
                     }
                 }
             }
@@ -48,3 +75,16 @@
             }
         }
     }
+
+    post {
+        success {
+            echo 'Build and tests passed!'
+             emailext body: 'email test', subject: 'email test', to: 'adyatwr@gmail.com'
+            
+        }
+
+        failure {
+            emailext body: 'email test', subject: 'email test', to: 'adyatwr@gmail.com'
+        }
+    }
+}
