@@ -79,12 +79,12 @@ pipeline {
     post {
         success {
             echo 'Build and tests passed!'
-             emailext body: 'email test', subject: 'email test', to: 'adyatwr@gmail.com'
+             emailext body: 'email test', subject: 'email test', to: 'adyatwr@gmail.com, seleniumadya@gmail.com'
             
         }
 
         failure {
-            emailext body: 'email test', subject: 'email test', to: 'adyatwr@gmail.com'
+            emailext body: 'email test', subject: 'email test', to: 'adyatwr@gmail.com, seleniumadya@gmail.com'
         }
     }
 }
