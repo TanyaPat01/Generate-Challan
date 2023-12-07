@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE_NAME = 'jenkins/jenkins'
+        DOCKER_IMAGE_NAME = 'capstone'
     }
 
     stages {
@@ -24,67 +24,33 @@ pipeline {
                 sh 'python3 -m pytest'
             }
         }
-        
-        stage('Install Dependencies') {
-            steps {
-                script {
-                    sh 'pip install -r requirements.txt'
-                }
-            }
-        }
-
-        stage('Run Unit Tests') {
-            steps {
-                script {
-                    try {
-                        sh 'python -m pytest tests/'
-                    } catch (Exception e) {
-                        currentBuild.result = 'FAILURE'
-                        throw error
-                    }
-                }
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    sh 'docker build -t $DOCKER_IMAGE_NAME .'
-                }
-            }
-        }
-
-        stage('Run Application in Docker') {
-            steps {
-                script {
-                    sh 'docker run -p 8080:8080 $DOCKER_IMAGE_NAME'
-                }
-            }
-        }
-
-        stage('Selenium Test Automation') {
-            steps {
-                script {
-                    // Set up virtual display for headless testing (for Linux)
-                    sh 'export DISPLAY=:99'
-                    sh 'Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &'
-
-                    // Run Selenium tests
-                    sh 'python -m pytest --headless tests/'
-                }
-            }
-        }
     }
 
     post {
-        success {
-            echo 'Build and tests passed!'
-             emailext body: 'email test', subject: 'email test', to: 'adyatwr@gmail.com, seleniumadya@gmail.com'
-            
+        always {
+            // This block will always be executed, regardless of the build result
+            bat 'docker logout'
         }
-
         failure {
-            emailext body: 'email test', subject: 'email test', to: 'adyatwr@gmail.com, seleniumadya@gmail.com'
+            emailext(
+                attachLog: true,
+                body: '''<html>
+                        <p>The build failed. Please check the Jenkins console output for details.</p>
+                        <p>Build URL: ${BUILD_URL}</p>
+                        </html>''',
+                subject: 'Build Failure',
+                to: 'adyatwr@gmail.com, seleniumadya@gmail.com'
+                mimeType: 'text/html'
+            )
+        }
+        success {
+            emailext(
+                attachLog: true,
+                body: 'The build was successful.',
+                subject: 'Build Success',
+                to: 'adyatwr@gmail.com, seleniumadya@gmail.com'
+                mimeType: 'text/html'
+            )
         }
     }
 }
