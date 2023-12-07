@@ -27,30 +27,20 @@ pipeline {
     }
 
     post {
-        always {
-            // This block will always be executed, regardless of the build result
-            bat 'docker logout'
-        }
         failure {
-            emailext(
-                attachLog: true,
-                body: '''<html>
-                        <p>The build failed. Please check the Jenkins console output for details.</p>
-                        <p>Build URL: ${BUILD_URL}</p>
-                        </html>''',
-                subject: 'Build Failure',
-                to: 'adyatwr@gmail.com, seleniumadya@gmail.com'
-                mimeType: 'text/html'
+            emailext (
+                subject: "Build Failed: ${currentBuild.fullDisplayName}",
+                body: "The build failed. Please investigate.",
+                to: "seleniumadya@gmail.com, adya.tiwari20@st.niituniversity.in, tanya.patel20@st.niituniversity.in, somia.kumari20@st.niituniversity.in"
             )
         }
         success {
-            emailext(
-                attachLog: true,
-                body: 'The build was successful.',
-                subject: 'Build Success',
-                to: 'adyatwr@gmail.com, seleniumadya@gmail.com'
-                mimeType: 'text/html'
+            emailext (
+                subject: "Build Successful: ${currentBuild.fullDisplayName}",
+                body: "The build was successful.",
+                to: "seleniumadya@gmail.com, adya.tiwari20@st.niituniversity.in, tanya.patel20@st.niituniversity.in, somia.kumari20@st.niituniversity.in"
             )
         }
     }
+
 }
