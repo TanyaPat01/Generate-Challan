@@ -45,4 +45,19 @@
         <p>{{ error }}</p>
         <!-- </div> -->
 
+        <h2>Registered Information</h2>
+    <ul>
+        {% if allChallan %}
+    <ul>
+        <li>
+            <!-- <strong>Number Plate:</strong> {{ allChallan[-1].numberPlate }}<br> -->
+            <strong>Email:</strong> {{ allChallan[-1].emailId }}<br>
+            <strong>Mobile Number:</strong> {{ allChallan[-1].mobileNumber }}<br>
+            <strong>Date Created:</strong> {{ allChallan[-1].date_created }}
+        </li>
+    </ul>
+{% endif %}
+
+    </ul>
+
 {% endblock body %}

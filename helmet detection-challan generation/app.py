@@ -21,11 +21,11 @@ with app.test_request_context():
      db.create_all()
 
 # Load YOLO models
-helmet_model = YOLO('C:/Users/HP/helmet detection-challan generation/models/helmet_best.pt')
-license_plate_model = YOLO('C:/Users/HP/helmet detection-challan generation/models/best.pt')
+helmet_model = YOLO('D:\\New folder\\helmet detection-challan generation\\models\\helmet_best.pt')
+license_plate_model = YOLO('D:\\New folder\\helmet detection-challan generation\\models\\best.pt')
 
 # Define the upload folder and allowed extensions
-UPLOAD_FOLDER = 'C:/Users/HP/helmet detection-challan generation/uploads'
+UPLOAD_FOLDER = 'D:\\New folder\\helmet detection-challan generation\\uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -48,6 +48,16 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
 client = Client(account_sid, auth_token)
+
+import random
+
+# Predefined options for email and phone number
+email_options = ['tanya.patel20@st.niituniversity.in', 'somia.kumari20@st.niituniversity.in', 'adya.tiwari20@st.niituniversity.in']
+number_options = ['7209578178', '9876543210', '5551234567']
+
+# Randomly select an email and phone number
+random_email = random.choice(email_options)
+random_number = random.choice(number_options)
 
 def send_twilio_sms(message, to_number):
     message = client.messages.create(
@@ -122,6 +132,7 @@ def index():
     print(allChallan)
 
 
+
     if request.method == 'POST':
         
         # Check if the post request has the file part
@@ -145,22 +156,26 @@ def index():
             # Process the uploaded image for license plate detection
             license_plate_detected, license_plate_img_base64 = process_image(upload_path, 'cropped_license_plate_images', license_plate_model, imgsz=320)
 
+
+
+
+
             # Generate result message
             if helmet_detected and license_plate_detected:
                 result_message = "No Challan Generated. Helmet Detected. Drive safely!"
             elif not helmet_detected and license_plate_detected:
                 result_message = "Challan Generated for violating without helmet and with license plate!"
-                numberP = 'Enter Number Plate'
-                email = 'Enter Registered Email'
-                num = 'Enter Mobile Number'
+                numberP = "JK 04B 0946"
+                email =  random_email
+                num =  random_number
                 challan = Challan(numberPlate=numberP, emailId=email, mobileNumber=num)
                 db.session.add(challan)
                 db.session.commit()
             else:
                 result_message = "Challan Generated for violating without helmet and without license plate!"
-                numberP = 'Enter Number Plate'
-                email = 'Enter Registered Email'
-                num = 'Enter Mobile Number'
+                numberP = "JK 04B 0946"
+                email =  random_email
+                num =  random_number
                 challan = Challan(numberPlate=numberP, emailId=email, mobileNumber=num)
                 db.session.add(challan)
                 db.session.commit()
