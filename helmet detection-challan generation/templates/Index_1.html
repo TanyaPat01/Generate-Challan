@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <!-- {% if helmet_img %}
+    <h2>Helmet Image</h2>
+    <img src="data:image/jpeg;base64,{{ helmet_img }}" alt="Helmet Image">
+{% endif %}
+
+{% if license_plate_img %}
+    <h2>License Plate Image</h2>
+    <img src="data:image/jpeg;base64,{{ license_plate_img }}" alt="License Plate Image">
+{% endif %}
+
+<p>{{ result }}</p>
+<p>{{ error }}</p> -->
+
+<!-- <form action="/" method="post" enctype="multipart/form-data">
+    <label for="fileInput" id="customButton">Choose File</label>
+    <input type="file" name="file" id="fileInput" accept=".jpg, .jpeg, .png" style="display: none;">
+    <input type="submit" value="Upload">
+</form> -->
+
+      <h2>
+        <!-- <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne"> -->
+            <form action="/" method="post" enctype="multipart/form-data">
+                <label for="fileInput" id="customButton">Choose File</label>
+                <input type="file" name="file" id="fileInput" accept=".jpg, .jpeg, .png" style="display: none;">
+                <input type="submit" value="Upload">
+            </form>
+        <!-- </button> -->
+      </h2>
+      <!-- <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample"> -->
+        <!-- <div class="accordion-body"> -->
+            {% if helmet_img %}
+            <h2>Helmet Image</h2>
+            <img src="data:image/jpeg;base64,{{ helmet_img }}" alt="Helmet Image">
+        {% endif %}
+        
+        {% if license_plate_img %}
+            <h2>License Plate Image</h2>
+            <img src="data:image/jpeg;base64,{{ license_plate_img }}" alt="License Plate Image">
+        {% endif %}
+        
+        <p>{{ result }}</p>
+        <p>{{ error }}</p>
+        <!-- </div> -->
+
+{% endblock body %}

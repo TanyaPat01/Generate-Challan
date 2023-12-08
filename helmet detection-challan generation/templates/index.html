@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challan Result</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get the file input element
+            var fileInput = document.getElementById("fileInput");
+
+            // Get the custom button element
+            var customButton = document.getElementById("customButton");
+
+            // Update the custom button text when a file is selected
+            fileInput.addEventListener("change", function () {
+                if (fileInput.files.length > 0) {
+                    customButton.innerHTML = "File Selected: " + fileInput.files[0].name;
+                } else {
+                    customButton.innerHTML = "Choose File";
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+
+{% if helmet_img %}
+        <h2>Helmet Image</h2>
+        <img src="data:image/jpeg;base64,{{ helmet_img }}" alt="Helmet Image">
+    {% endif %}
+
+    {% if license_plate_img %}
+        <h2>License Plate Image</h2>
+        <img src="data:image/jpeg;base64,{{ license_plate_img }}" alt="License Plate Image">
+    {% endif %}
+
+    <p>{{ result }}</p>
+    <p>{{ error }}</p>
+
+    <form action="/" method="post" enctype="multipart/form-data">
+        <label for="fileInput" id="customButton">Choose File</label>
+        <input type="file" name="file" id="fileInput" accept=".jpg, .jpeg, .png" style="display: none;">
+        <input type="submit" value="Upload">
+    </form>
+</body>
+
+</html>
